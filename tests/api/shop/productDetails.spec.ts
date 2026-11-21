@@ -27,7 +27,6 @@ test("Should tell us which products are missing required fields", async ({
 
       const requiredFields: requiredFieldsType = {
         name: product.name,
-        description: product.description,
         id: product.id,
         price: product.variants[0]?.price,
         sku: product.variants[0]?.sku,

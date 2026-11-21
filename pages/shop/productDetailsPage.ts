@@ -5,7 +5,6 @@ export class ProductDetailsPage {
   private readonly image: Locator;
   private readonly title: Locator;
   private readonly price: Locator;
-  private readonly description: Locator;
   private readonly sku: Locator;
   private readonly stockStatus: Locator;
   private readonly addToCartButton: Locator;
@@ -19,7 +18,6 @@ export class ProductDetailsPage {
     this.price = this.page
       .getByTestId("productPrice")
       .filter({ visible: true });
-    this.description = this.page.getByTestId("productDescription");
     this.sku = this.page.getByTestId("productSku");
     this.stockStatus = this.page.getByTestId("productStockStatus");
     this.addToCartButton = this.page.getByRole("button", {

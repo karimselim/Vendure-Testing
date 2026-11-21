@@ -30,7 +30,6 @@ export type graphProductDetailsType = {
 
 export type requiredFieldsType = {
   name: string;
-  description: string;
   id: string;
   price: number;
   sku: string;
