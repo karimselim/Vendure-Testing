@@ -17,7 +17,7 @@ test("Should tell us which products are missing required fields", async ({
   for (let i = 0; i < count; i++) {
     await test.step(`Product ${i + 1}`, async () => {
       const item = items[i];
-      expect.soft(item.id).toEqual(expect.any(String));
+      expect(item.id).toEqual(expect.any(String));
       const id = item.id;
       const { body, status } = await productDetailsApiClient.productDetails(id);
       expect(status).toBe(200);
@@ -33,7 +33,7 @@ test("Should tell us which products are missing required fields", async ({
         stockLevel: product.variants[0]?.stockLevel,
       };
 
-      const missingRequiredFields = [];
+      const missingRequiredFields: string[] = [];
 
       for (const field in requiredFields) {
         const key = field as keyof typeof requiredFields;
