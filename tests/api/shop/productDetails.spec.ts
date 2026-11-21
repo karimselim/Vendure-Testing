@@ -2,7 +2,7 @@ import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api-base";
 import { requiredFieldsType } from "../../../types/api-types/shop/productDetails-api";
 
-test("Should get all required fields for the UI", async ({
+test("Should tell us which products are missing required fields", async ({
   productDetailsApiClient,
   getProductsApiClient,
 }) => {
