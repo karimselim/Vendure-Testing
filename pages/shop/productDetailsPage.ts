@@ -9,6 +9,7 @@ export class ProductDetailsPage {
   private readonly stockStatus: Locator;
   private readonly addToCartButton: Locator;
   private readonly outOfStockButton: Locator;
+  private readonly cartCount: Locator;
 
   constructor(private readonly page: Page) {
     this.image = this.page.getByTestId("productImg");
@@ -26,6 +27,7 @@ export class ProductDetailsPage {
     this.outOfStockButton = this.page.getByRole("button", {
       name: "Out of Stock",
     });
+    this.cartCount = this.page.getByTestId("cartCount");
   }
 
   getProductDetails(): productDataType {
@@ -39,5 +41,10 @@ export class ProductDetailsPage {
     };
   }
 
-  async addToCart() {}
+  async getCartCount() {
+    if (!(await this.cartCount.isVisible())) return 0;
+    const value = await this.cartCount.textContent();
+    const text = value ?? "";
+    return Number(text.trim()) || 0;
+  }
 }

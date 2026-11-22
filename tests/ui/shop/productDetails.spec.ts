@@ -1,4 +1,4 @@
-import { expect } from "@playwright/test";
+import { expect, Locator } from "@playwright/test";
 import { test } from "../../../fixtures/base";
 
 test("Should display all required info for the product", async ({
@@ -42,4 +42,40 @@ test("Should display all required info for the product", async ({
     });
   }
   expect(count).toEqual(seen.inStock + seen.outStock);
+});
+
+test.only("Should add an in-stock product to the cart", async ({
+  productDetailsPage,
+  productsPage,
+  page,
+}) => {
+  await page.goto("/search");
+  const products = productsPage.getProducts();
+  await expect(products.first()).toBeVisible();
+  const count = await products.count();
+
+  let tested = false;
+  for (let i = 0; i < count && !tested; i++) {
+    await page.goto("/search");
+    await expect(products.first()).toBeVisible();
+    await products.nth(i).click();
+
+    const { stockStatus, addToCartButton } =
+      productDetailsPage.getProductDetails();
+    await expect(stockStatus).toHaveText(/(In|Out of) Stock/i);
+
+    const status = (await stockStatus.innerText()).trim();
+    if (!/^in stock/i.test(status)) continue;
+
+    await expect(addToCartButton).toBeVisible();
+    const countBefore = await productDetailsPage.getCartCount();
+    await addToCartButton.click();
+    await expect
+      .poll(() => productDetailsPage.getCartCount())
+      .toBe(countBefore + 1);
+
+    tested = true;
+  }
+
+  expect(tested, "No in-stock product found in the store").toBe(true);
 });
