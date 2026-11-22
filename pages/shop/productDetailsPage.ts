@@ -28,7 +28,7 @@ export class ProductDetailsPage {
     });
   }
 
-  getProducDetails(): productDataType {
+  getProductDetails(): productDataType {
     return {
       title: this.title,
       price: this.price,
@@ -38,4 +38,6 @@ export class ProductDetailsPage {
       outOfStockButton: this.outOfStockButton,
     };
   }
+
+  async addToCart() {}
 }

@@ -10,7 +10,7 @@ type MyFixtures = {
   loginPage: LoginPage;
   forgotPasswordPage: ForgotPassword;
   productsPage: ProductsPage;
-  producDetailsPage: ProductDetailsPage;
+  productDetailsPage: ProductDetailsPage;
 };
 
 export const test = base.extend<MyFixtures>({
@@ -34,7 +34,7 @@ export const test = base.extend<MyFixtures>({
     await use(productsPage);
   },
 
-  producDetailsPage: async ({ page }, use) => {
+  productDetailsPage: async ({ page }, use) => {
     const productDetailsPage = new ProductDetailsPage(page);
     await use(productDetailsPage);
   },

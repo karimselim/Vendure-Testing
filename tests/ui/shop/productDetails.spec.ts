@@ -2,7 +2,7 @@ import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/base";
 
 test("Should display all required info for the product", async ({
-  producDetailsPage,
+  productDetailsPage,
   productsPage,
   page,
 }) => {
@@ -22,21 +22,19 @@ test("Should display all required info for the product", async ({
 
       await card.click();
 
-      const details = producDetailsPage.getProducDetails();
+      const details = productDetailsPage.getProductDetails();
       await expect.soft(details.price).not.toBeEmpty();
       await expect.soft(details.title).not.toBeEmpty();
       await expect.soft(details.sku).not.toBeEmpty();
       await expect
         .soft(details.stockStatus)
-        .toHaveText(/(In Stock|Out of Stock)/gi);
+        .toHaveText(/(In Stock|Out of Stock)/i);
 
       if ((await details.stockStatus.innerText()) === "Out of Stock") {
         await expect.soft(details.addToCartButton).toBeHidden();
         await expect.soft(details.outOfStockButton).toBeVisible();
         seen.outStock++;
-      }
-
-      if ((await details.stockStatus.innerText()) === "In Stock") {
+      } else if ((await details.stockStatus.innerText()) === "In Stock") {
         await expect.soft(details.addToCartButton).toBeVisible();
         await expect.soft(details.outOfStockButton).toBeHidden();
         seen.inStock++;
