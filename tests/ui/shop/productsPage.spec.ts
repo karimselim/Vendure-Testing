@@ -55,7 +55,7 @@ test("Checking for products details", async ({ productsPage, page }) => {
 });
 
 test.only("Should display consistent product information between the product card and product details page", async ({
-  producDetailsPage,
+  productDetailsPage,
   productsPage,
   page,
 }) => {
@@ -83,7 +83,7 @@ test.only("Should display consistent product information between the product car
       await card.click();
       await expect(page).toHaveURL(href);
 
-      const details = producDetailsPage.getProducDetails();
+      const details = productDetailsPage.getProductDetails();
       await expect(details.title).toHaveText(cardTitle!);
       await expect(details.price).toHaveText(cardPrice!);
     });
