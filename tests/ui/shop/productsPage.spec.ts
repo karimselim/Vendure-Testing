@@ -1,6 +1,5 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/base";
-import { sortingMethodType } from "../../../types/ui/shop/productsPage";
 
 test("Products page navigation", async ({ productsPage, page }) => {
   await productsPage.navigateToProductsPage();
@@ -54,7 +53,7 @@ test("Checking for products details", async ({ productsPage, page }) => {
   }
 });
 
-test.only("Should display consistent product information between the product card and product details page", async ({
+test("Should display consistent product information between the product card and product details page", async ({
   productDetailsPage,
   productsPage,
   page,
