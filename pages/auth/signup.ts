@@ -1,4 +1,4 @@
-import { Page, Locator } from "@playwright/test";
+import { Page, Locator, expect } from "@playwright/test";
 
 export class SignupPage {
   private readonly email: Locator;
@@ -38,14 +38,22 @@ export class SignupPage {
     await this.page.goto("/register");
     //I've removed networkIdle as playwright docs it self descourage using it
     //networkidle' - DISCOURAGED consider operation to be finished when there are no network connections
-    await this.email.waitFor({ state: "visible" });
+
     await this.email.fill(signupData.email);
     await this.firstName.fill(signupData.firstName);
     await this.lastName.fill(signupData.lastName);
     await this.phoneNumber.fill(signupData.phoneNumber);
     await this.password.fill(passwordInput);
     await this.confirmPassword.fill(passwordInput);
-    // await this.page.pause();
+
+    //That's a double check for the first input ( email ) as that's a known problem
+    //https://github.com/react/react/issues/12955
+    await expect(async () => {
+      if ((await this.email.inputValue()) !== signupData.email) {
+        await this.email.fill(signupData.email);
+      }
+      await expect(this.email).toHaveValue(signupData.email);
+    }).toPass({ timeout: 10_000 });
     await this.createAccountButton.click();
   }
 }
