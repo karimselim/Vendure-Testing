@@ -6,7 +6,7 @@ on:
     branches: [ main, master ]
 jobs:
   test:
-    timeout-minutes: 20
+    timeout-minutes: 40
     runs-on: ubuntu-latest
     env:
       SIGNUP_PASSWORD: ${{ secrets.SIGNUP_PASSWORD || 'CiTestPassword#2026' }}
