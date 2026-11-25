@@ -17,7 +17,9 @@ export class ProductsPage {
     });
 
     //pay attention that these are all the products
-    this.products = this.page.getByTestId("product");
+    // Next.js keeps pages you left (like the home page) hidden in the DOM,
+    // so only count the cards that are actually shown.
+    this.products = this.page.getByTestId("product").filter({ visible: true });
 
     this.sortingMenu = this.page.getByRole("combobox");
     this.ZToAOption = this.page.getByRole("option", {
