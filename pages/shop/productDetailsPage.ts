@@ -47,7 +47,9 @@ export class ProductDetailsPage {
     await this.title.first().waitFor();
     const options = this.page.getByRole("radio");
     if ((await options.count()) > 0) {
-      await options.first().click();
+      // A click can be intercepted by the fixed header or an overlay, so send
+      // the click event straight to the option.
+      await options.first().dispatchEvent("click");
     }
   }
 

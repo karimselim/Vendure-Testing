@@ -44,7 +44,12 @@ export class ProductsPage {
 
   async navigateToProductsPage(): Promise<void> {
     await this.page.goto("/");
-    await this.shopNowButton.click();
+    // The button can be clicked before the page is interactive, which does
+    // nothing. Retry the click until the products page opens.
+    await expect(async () => {
+      await this.shopNowButton.click();
+      await expect(this.page).toHaveURL(/\/search/, { timeout: 5000 });
+    }).toPass({ timeout: 30000 });
   }
 
   async navigateToFirstProductDetails(): Promise<void> {
