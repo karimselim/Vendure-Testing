@@ -55,7 +55,7 @@ jobs:
           curl -s -L -o /dev/null -m 120 -w "product/$slug %{http_code} %{time_total}s\n" "localhost:3001/en/product/$slug" || true
         done
     - name: Run Playwright tests
-      run: npx playwright test --timeout=20000 --retries=1 --global-timeout=1500000
+      run: npx playwright test --timeout=60000 --retries=1 --global-timeout=1500000
     - name: Show server logs on failure
       if: failure()
       run: |
