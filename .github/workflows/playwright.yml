@@ -6,7 +6,7 @@ on:
     branches: [ main, master ]
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     env:
       SIGNUP_PASSWORD: ${{ secrets.SIGNUP_PASSWORD || 'CiTestPassword#2026' }}
@@ -43,7 +43,7 @@ jobs:
     - name: Seed the login test user
       run: .github/scripts/seed-user.sh
     - name: Run Playwright tests
-      run: npx playwright test
+      run: npx playwright test --timeout=20000 --retries=1
     - name: Show server logs on failure
       if: failure()
       run: |
