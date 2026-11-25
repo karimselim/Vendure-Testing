@@ -30,7 +30,6 @@ export class LoginPage {
     await this.email.waitFor({ state: "visible" });
     await this.email.fill(data.email);
     await this.password.fill(passwordInput);
-    await this.page.pause();
     await this.signInButton.click();
   }
 }
