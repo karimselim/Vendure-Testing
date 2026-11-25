@@ -44,7 +44,7 @@ test("Should display all required info for the product", async ({
   expect(count).toEqual(seen.inStock + seen.outStock);
 });
 
-test.only("Should add an in-stock product to the cart", async ({
+test("Should add an in-stock product to the cart", async ({
   productDetailsPage,
   productsPage,
   page,

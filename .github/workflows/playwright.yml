@@ -1,24 +1,54 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, 'ci/**' ]
   pull_request:
     branches: [ main, master ]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      SIGNUP_PASSWORD: ${{ secrets.SIGNUP_PASSWORD || 'CiTestPassword#2026' }}
+      VENDURE_DISABLE_TELEMETRY: 'true'
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
-        node-version: lts/*
+        node-version: 22
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      run: npx playwright install --with-deps chromium
+    - name: Create a Vendure shop (server on 3000, Next.js storefront on 3001)
+      run: |
+        mkdir -p "$RUNNER_TEMP/vendure"
+        cd "$RUNNER_TEMP/vendure"
+        npx --yes @vendure/create shop --ci --storefront nextjs --db sqlite --use-npm
+    - name: Start Vendure server and storefront
+      run: |
+        cd "$RUNNER_TEMP/vendure/shop"
+        (cd apps/server && nohup npm run dev:server > "$RUNNER_TEMP/server.log" 2>&1 &)
+        (cd apps/storefront && nohup npx next dev --port 3001 > "$RUNNER_TEMP/storefront.log" 2>&1 &)
+        for i in $(seq 1 90); do
+          curl -sf localhost:3000/shop-api -H 'content-type: application/json' -d '{"query":"{products{totalItems}}"}' >/dev/null && break
+          sleep 5
+        done
+        curl -sf localhost:3000/shop-api -H 'content-type: application/json' -d '{"query":"{products{totalItems}}"}'
+        for i in $(seq 1 60); do
+          curl -sf -o /dev/null localhost:3001/en && break
+          sleep 5
+        done
+        curl -sf -o /dev/null localhost:3001/en
+    - name: Seed the login test user
+      run: .github/scripts/seed-user.sh
     - name: Run Playwright tests
       run: npx playwright test
+    - name: Show server logs on failure
+      if: failure()
+      run: |
+        tail -n 80 "$RUNNER_TEMP/server.log" || true
+        tail -n 80 "$RUNNER_TEMP/storefront.log" || true
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
