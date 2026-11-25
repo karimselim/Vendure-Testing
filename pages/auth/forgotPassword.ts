@@ -15,9 +15,10 @@ export class ForgotPassword {
 
   async validForgotPassword(data: loginDataType) {
     await this.page.goto("/forgot-password");
+    // Wait until the page has loaded its scripts before filling the form.
+    await this.page.waitForLoadState("networkidle");
     await this.email.waitFor({ state: "visible" });
     await this.email.fill(data.email);
-    await this.page.pause();
     await this.sendResetLinkButton.click();
   }
 }

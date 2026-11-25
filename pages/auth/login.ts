@@ -27,6 +27,9 @@ export class LoginPage {
     }
 
     await this.page.goto("/sign-in");
+    // Wait until the page has loaded its scripts. Filling the form before that
+    // can submit it without the app handling it.
+    await this.page.waitForLoadState("networkidle");
     await this.email.waitFor({ state: "visible" });
     await this.email.fill(data.email);
     await this.password.fill(passwordInput);
