@@ -43,6 +43,16 @@ for (const { option, order } of apiSortCases) {
     const actual = items.map((item) => item[option]);
     const expected = [...actual].sort(sorting[option]);
     order === "DESC" && expected.reverse();
+
+    if (option === "name") {
+      // The database decides how upper and lower case letters are ordered
+      // (SQLite sorts "USB" before "Ultraboost", Postgres does not), so a name
+      // list is correct if it matches either ordering.
+      const binaryExpected = [...actual].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+      order === "DESC" && binaryExpected.reverse();
+      expect([expected, binaryExpected]).toContainEqual(actual);
+      return;
+    }
     expect(actual).toEqual(expected);
   });
 }
