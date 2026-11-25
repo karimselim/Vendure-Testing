@@ -25,6 +25,9 @@ jobs:
         mkdir -p "$RUNNER_TEMP/vendure"
         cd "$RUNNER_TEMP/vendure"
         npx --yes @vendure/create shop --ci --storefront nextjs --db sqlite --use-npm
+    - name: Use the modified storefront from this repo (adds data-testid attributes the tests rely on)
+      run: |
+        rsync -a --exclude='.env*' --exclude='node_modules' --exclude='.next' "$GITHUB_WORKSPACE/storefront/" "$RUNNER_TEMP/vendure/shop/apps/storefront/"
     - name: Start Vendure server and storefront
       run: |
         cd "$RUNNER_TEMP/vendure/shop"
