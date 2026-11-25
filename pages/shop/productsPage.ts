@@ -50,6 +50,12 @@ export class ProductsPage {
       await this.shopNowButton.click();
       await expect(this.page).toHaveURL(/\/search/, { timeout: 5000 });
     }).toPass({ timeout: 30000 });
+    // Wait for the search page itself, so cards from the home page that are
+    // still in the DOM during the page change are not counted.
+    await expect(
+      this.page.getByRole("heading", { name: "Search", level: 1 }),
+    ).toBeVisible();
+    await expect(this.products.first()).toBeVisible();
   }
 
   async navigateToFirstProductDetails(): Promise<void> {
