@@ -45,6 +45,15 @@ jobs:
         curl -sf -o /dev/null localhost:3001/en
     - name: Seed the login test user
       run: .github/scripts/seed-user.sh
+    - name: Warm up storefront pages (the Next dev server compiles each page on first visit)
+      run: |
+        for path in /en /en/sign-in /en/register /en/forgot-password /en/cart /en/search /en/account/profile; do
+          curl -s -L -o /dev/null -m 120 -w "$path %{http_code} %{time_total}s\n" "localhost:3001$path" || true
+        done
+        SLUGS=$(curl -s localhost:3000/shop-api -H 'content-type: application/json' -d '{"query":"{products(options:{take:100}){items{slug}}}"}' | jq -r '.data.products.items[].slug')
+        for slug in $SLUGS; do
+          curl -s -L -o /dev/null -m 120 -w "product/$slug %{http_code} %{time_total}s\n" "localhost:3001/en/product/$slug" || true
+        done
     - name: Run Playwright tests
       run: npx playwright test --timeout=20000 --retries=1 --global-timeout=1500000
     - name: Show server logs on failure
