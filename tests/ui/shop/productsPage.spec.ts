@@ -82,6 +82,7 @@ test("Should display consistent product information between the product card and
       await card.click();
       await expect(page).toHaveURL(href);
 
+      await productDetailsPage.selectFirstOptionIfPresent();
       const details = productDetailsPage.getProductDetails();
       await expect(details.title).toHaveText(cardTitle!);
       await expect(details.price).toHaveText(cardPrice!);

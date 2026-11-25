@@ -41,6 +41,16 @@ export class ProductDetailsPage {
     };
   }
 
+  // Products with variants (for example sizes) only show price, SKU and stock
+  // after an option is chosen, so pick the first one when a choice is offered.
+  async selectFirstOptionIfPresent(): Promise<void> {
+    await this.title.first().waitFor();
+    const options = this.page.getByRole("radio");
+    if ((await options.count()) > 0) {
+      await options.first().click();
+    }
+  }
+
   async getCartCount() {
     if (!(await this.cartCount.isVisible())) return 0;
     const value = await this.cartCount.textContent();

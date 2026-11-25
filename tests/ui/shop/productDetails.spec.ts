@@ -22,6 +22,7 @@ test("Should display all required info for the product", async ({
 
       await card.click();
 
+      await productDetailsPage.selectFirstOptionIfPresent();
       const details = productDetailsPage.getProductDetails();
       await expect.soft(details.price).not.toBeEmpty();
       await expect.soft(details.title).not.toBeEmpty();
