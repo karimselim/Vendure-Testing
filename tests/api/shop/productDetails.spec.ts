@@ -44,7 +44,7 @@ test("Should tell us which products are missing required fields", async ({
         }
       }
 
-      console.log(missingRequiredFields);
+      expect(missingRequiredFields).toEqual([]);
     });
   }
 });
