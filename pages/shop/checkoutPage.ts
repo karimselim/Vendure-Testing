@@ -47,9 +47,10 @@ export class CheckoutPage {
     this.continueToReviewButton = this.page.getByRole("button", {
       name: "Continue to review",
     });
-    this.placeOrderButton = this.page.getByRole("button", {
-      name: "Place Order",
-    });
+    // The accordion header is also named "Place Order", so match the action button only.
+    this.placeOrderButton = this.page
+      .locator('button[data-slot="button"]')
+      .filter({ hasText: "Place Order" });
     this.orderConfirmedHeading = this.page.getByRole("heading", {
       name: "Order Confirmed!",
     });
@@ -108,6 +109,7 @@ export class CheckoutPage {
   }
 
   async placeOrder(): Promise<void> {
+    await expect(this.placeOrderButton).toBeEnabled({ timeout: 15000 });
     await this.placeOrderButton.click();
     await expect(this.page).toHaveURL(/\/order-confirmation\//, {
       timeout: 30000,
