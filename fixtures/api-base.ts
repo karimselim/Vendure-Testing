@@ -6,6 +6,7 @@ import { ForgotPasswordApiClient } from "../api-clients/auth/forgotPassword-api-
 import { GetProductsApiClient } from "../api-clients/shop/getProducts-api-client";
 import { ProductDetailsApiClient } from "../api-clients/shop/productDetails-api-client";
 import { CartApiClient } from "../api-clients/shop/cart-api-client";
+import { CheckoutApiClient } from "../api-clients/shop/checkout-api-client";
 
 type MyFixtures = {
   loginApiClient: LoginApiClient;
@@ -15,6 +16,7 @@ type MyFixtures = {
   getProductsApiClient: GetProductsApiClient;
   productDetailsApiClient: ProductDetailsApiClient;
   cartApiClient: CartApiClient;
+  checkoutApiClient: CheckoutApiClient;
 };
 
 export const test = base.extend<MyFixtures>({
@@ -51,5 +53,10 @@ export const test = base.extend<MyFixtures>({
   cartApiClient: async ({ shopApiClient }, use) => {
     const cartApiClient = new CartApiClient(shopApiClient);
     await use(cartApiClient);
+  },
+
+  checkoutApiClient: async ({ shopApiClient }, use) => {
+    const checkoutApiClient = new CheckoutApiClient(shopApiClient);
+    await use(checkoutApiClient);
   },
 });
