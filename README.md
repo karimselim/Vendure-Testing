@@ -1,5 +1,7 @@
 # Vendure-Testing
 
+[![Playwright Tests](https://github.com/karimselim/Vendure-Testing/actions/workflows/playwright.yml/badge.svg)](https://github.com/karimselim/Vendure-Testing/actions/workflows/playwright.yml)
+
 Playwright + TypeScript test suite for a Vendure shop: UI tests against the Next.js storefront and API tests against the Shop GraphQL API.
 
 ## Structure
@@ -16,8 +18,13 @@ Playwright + TypeScript test suite for a Vendure shop: UI tests against the Next
 - Cart UI: add, quantity, remove, totals, promotion code, empty cart.
 - Cart API: add, adjust, remove, totals, invalid input.
 - Checkout API: shipping and payment methods, address, order transitions, payment errors.
-- Checkout UI: field validation, empty cart redirect, guest order to confirmation page.
-- Auth, products, product details and sorting.
+- Checkout UI: field validation, empty cart redirect, guest order and logged in order to the confirmation page. The storefront always sends a successful payment, so declined and failed payments are covered in the API tests only.
+- Auth API: wrong password, unknown user, empty password, weak password, no email leak on signup and forgot password, invalid reset token.
+- Auth UI, products, product details and sorting.
+
+## Known bugs the tests document
+
+- `registerCustomerAccount` accepts an email with no `@` and returns success. The test for it is marked `test.fail`, so it passes while the bug exists and turns red when the bug is fixed.
 
 ## Run locally
 
@@ -27,5 +34,7 @@ Playwright + TypeScript test suite for a Vendure shop: UI tests against the Next
 4. `npx playwright test` (all), `npx playwright test tests/api` (API only), `npx playwright test tests/ui` (UI only).
 
 ## CI
+
+Every run uploads the Playwright HTML report as the `playwright-report` artifact (kept 30 days). Open any run on the [Actions page](https://github.com/karimselim/Vendure-Testing/actions/workflows/playwright.yml), scroll to "Artifacts", download it and open `index.html`. Failed tests also keep a screenshot, video and trace.
 
 `.github/workflows/playwright.yml` runs on pushes to `main`, `master` and `ci/**`. It starts Vendure and the storefront, then runs the suite.
