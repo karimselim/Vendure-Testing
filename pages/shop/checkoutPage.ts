@@ -92,8 +92,13 @@ export class CheckoutPage {
   // opens an "add address" dialog. With a saved address it lists it, so pick that one.
   async chooseCustomerAddress(address: checkoutAddressType): Promise<void> {
     await expect(
-      this.fullNameInput.or(this.continueWithSelectedButton),
+      this.fullNameInput
+        .or(this.continueWithSelectedButton)
+        .or(this.continueToPaymentButton),
     ).toBeVisible({ timeout: 30000 });
+
+    // A logged in customer keeps the open order, so the address can already be set.
+    if (await this.continueToPaymentButton.isVisible()) return;
 
     if (await this.fullNameInput.isVisible()) {
       await this.fullNameInput.fill(address.fullName);
@@ -114,13 +119,21 @@ export class CheckoutPage {
   }
 
   async chooseFirstShippingMethod(): Promise<void> {
-    await this.shippingMethods.first().click();
+    // The page can re-render right after the previous step, which drops the
+    // selection, so click again until "Continue to payment" is enabled.
+    await expect(async () => {
+      await this.shippingMethods.first().click();
+      await expect(this.continueToPaymentButton).toBeEnabled({ timeout: 2000 });
+    }).toPass({ timeout: 30000 });
     await this.continueToPaymentButton.click();
     await expect(this.paymentMethods.first()).toBeVisible({ timeout: 15000 });
   }
 
   async chooseFirstPaymentMethod(): Promise<void> {
-    await this.paymentMethods.first().click();
+    await expect(async () => {
+      await this.paymentMethods.first().click();
+      await expect(this.continueToReviewButton).toBeEnabled({ timeout: 2000 });
+    }).toPass({ timeout: 30000 });
     await this.continueToReviewButton.click();
     await expect(this.placeOrderButton).toBeVisible({ timeout: 15000 });
   }
