@@ -27,7 +27,7 @@ test.describe("Checkout UI as a logged in customer", () => {
     await cartPage.proceedToCheckout();
 
     // A logged in customer already has contact details, so the address form comes first.
-    await checkoutPage.fillAddress(address);
+    await checkoutPage.chooseCustomerAddress(address);
     await checkoutPage.chooseFirstShippingMethod();
     await checkoutPage.chooseFirstPaymentMethod();
     await checkoutPage.placeOrder();

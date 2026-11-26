@@ -15,6 +15,8 @@ export class CheckoutPage {
   private readonly postalCodeInput: Locator;
   private readonly phoneInput: Locator;
   private readonly addressContinueButton: Locator;
+  private readonly saveAddressButton: Locator;
+  private readonly continueWithSelectedButton: Locator;
   private readonly shippingMethods: Locator;
   private readonly continueToPaymentButton: Locator;
   private readonly paymentMethods: Locator;
@@ -38,6 +40,12 @@ export class CheckoutPage {
     this.addressContinueButton = this.page.getByRole("button", {
       name: "Continue",
       exact: true,
+    });
+    this.saveAddressButton = this.page.getByRole("button", {
+      name: "Save address",
+    });
+    this.continueWithSelectedButton = this.page.getByRole("button", {
+      name: "Continue with selected address",
     });
     this.shippingMethods = this.page.getByRole("radio");
     this.continueToPaymentButton = this.page.getByRole("button", {
@@ -77,6 +85,31 @@ export class CheckoutPage {
     await this.postalCodeInput.fill(address.postalCode);
     await this.phoneInput.fill(address.phoneNumber);
     await this.addressContinueButton.click();
+    await expect(this.shippingMethods.first()).toBeVisible({ timeout: 15000 });
+  }
+
+  // A logged in customer has no contact step. With no saved address the storefront
+  // opens an "add address" dialog. With a saved address it lists it, so pick that one.
+  async chooseCustomerAddress(address: checkoutAddressType): Promise<void> {
+    await expect(
+      this.fullNameInput.or(this.continueWithSelectedButton),
+    ).toBeVisible({ timeout: 30000 });
+
+    if (await this.fullNameInput.isVisible()) {
+      await this.fullNameInput.fill(address.fullName);
+      await this.streetInput.fill(address.streetLine1);
+      await this.cityInput.fill(address.city);
+      await this.postalCodeInput.fill(address.postalCode);
+      await this.phoneInput.fill(address.phoneNumber);
+      await this.saveAddressButton.click();
+      await expect(this.continueWithSelectedButton).toBeVisible({
+        timeout: 30000,
+      });
+    }
+
+    await this.page.getByRole("radio").first().click();
+    await expect(this.continueWithSelectedButton).toBeEnabled();
+    await this.continueWithSelectedButton.click();
     await expect(this.shippingMethods.first()).toBeVisible({ timeout: 15000 });
   }
 
