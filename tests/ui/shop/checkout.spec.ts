@@ -20,12 +20,15 @@ const address = {
   phoneNumber: "+201000000000",
 };
 
-test("Should show the empty cart message when checking out with no items", async ({
+test("Should not allow checkout with an empty cart", async ({
+  cartPage,
   page,
 }) => {
   await page.goto("/checkout");
 
-  await expect(page.getByText("Your cart is empty.")).toBeVisible();
+  // The storefront sends visitors with an empty cart back to the cart page.
+  await expect(page).toHaveURL(/\/cart/);
+  await expect(cartPage.getEmptyCartInfo().emptyCartHeading).toBeVisible();
 });
 
 test("Should require the contact details before continuing", async ({
@@ -62,7 +65,7 @@ test("Should reject an invalid email address", async ({
   await cartPage.navigate();
   await cartPage.proceedToCheckout();
 
-  await checkoutPage.getEmailInput().fill("not-an-email");
+  await checkoutPage.getEmailInput().fill("user@domain");
   await checkoutPage.submitContactForm();
 
   await expect(
