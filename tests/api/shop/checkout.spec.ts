@@ -218,6 +218,43 @@ test.describe("Checkout API", () => {
     expect(active.data?.activeOrder?.state).toBe("ArrangingPayment");
   });
 
+  test("Should report a payment error and keep the order open", async ({
+    cartApiClient,
+    checkoutApiClient,
+  }) => {
+    await prepareOrder(cartApiClient, checkoutApiClient);
+    await checkoutApiClient.transitionToState("ArrangingPayment");
+
+    const { body } = await checkoutApiClient.addPayment("standard-payment", {
+      shouldDecline: false,
+      shouldError: true,
+      shouldErrorOnSettle: false,
+    });
+
+    expect(body.data?.addPaymentToOrder?.__typename).toBe("PaymentFailedError");
+    const { body: active } = await cartApiClient.getActiveOrder();
+    expect(active.data?.activeOrder?.state).toBe("ArrangingPayment");
+  });
+
+  test("Should not accept a second payment after the order is paid", async ({
+    cartApiClient,
+    checkoutApiClient,
+  }) => {
+    await prepareOrder(cartApiClient, checkoutApiClient);
+    await checkoutApiClient.transitionToState("ArrangingPayment");
+    const metadata = {
+      shouldDecline: false,
+      shouldError: false,
+      shouldErrorOnSettle: false,
+    };
+    const first = await checkoutApiClient.addPayment("standard-payment", metadata);
+    expectOrder(first.body.data?.addPaymentToOrder);
+
+    const second = await checkoutApiClient.addPayment("standard-payment", metadata);
+
+    expect(second.body.data?.addPaymentToOrder?.__typename).not.toBe("Order");
+  });
+
   test("Should not move to payment without a shipping address", async ({
     cartApiClient,
     checkoutApiClient,
