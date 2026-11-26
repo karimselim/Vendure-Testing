@@ -28,6 +28,7 @@ export async function PromotionCode({activeOrder}: { activeOrder: ActiveOrder })
                     <div className="space-y-2">
                         {activeOrder.couponCodes.map((code) => (
                             <div key={code}
+                                 data-testid="appliedPromotionCode"
                                  className="flex items-center justify-between p-3 border rounded-md bg-green-50 dark:bg-green-950/20">
                                 <div className="flex items-center gap-2">
                                     <Tag className="h-4 w-4 text-green-600"/>
@@ -39,6 +40,7 @@ export async function PromotionCode({activeOrder}: { activeOrder: ActiveOrder })
                                         type="submit"
                                         variant="ghost"
                                         size="sm"
+                                        data-testid="removePromotionCode"
                                         className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                                     >
                                         {t('remove')}
@@ -52,11 +54,12 @@ export async function PromotionCode({activeOrder}: { activeOrder: ActiveOrder })
                         <Input
                             type="text"
                             name="code"
+                            data-testid="promotionCodeInput"
                             placeholder={t('enterCode')}
                             className="flex-1"
                             required
                         />
-                        <Button type="submit">{t('apply')}</Button>
+                        <Button type="submit" data-testid="applyPromotionCode">{t('apply')}</Button>
                     </form>
                 )}
             </CardContent>
