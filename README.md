@@ -4,6 +4,16 @@
 
 Playwright + TypeScript test suite for a Vendure shop: UI tests against the Next.js storefront and API tests against the Shop GraphQL API.
 
+## What is mine and what is not
+
+Everything under `tests/`, `pages/`, `api-clients/`, `fixtures/`, `types/`, `test-data/` and `.github/` is my own work: the test framework, the tests and the CI pipeline.
+
+`storefront/` is **not** my product. It is the open source Vendure Next.js starter (created with `@vendure/create`), kept here only so CI can run the tests against it. My only changes to it are `data-testid` attributes the tests use. The Vendure server is the unmodified starter too.
+
+![Playwright report, 68 passed, 0 failed](docs/ci-report.png)
+
+*Playwright HTML report from a green CI run: 68 passed, 0 failed, 0 flaky.*
+
 ## Structure
 
 - `pages/` page objects, one class per page (`CartPage`, `CheckoutPage`, `ProductsPage`, ...). Locators are private, tests call methods.
