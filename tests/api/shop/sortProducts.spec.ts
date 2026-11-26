@@ -7,52 +7,54 @@ import {
   sortingOptionType,
 } from "../../../types/api-types/shop/getProducts-api";
 
-// Notice that the UI only have name and price
-const apiSortCases: apiSortCasesType = [
-  { option: "id", order: "ASC" },
-  { option: "id", order: "DESC" },
-  { option: "name", order: "ASC" },
-  { option: "name", order: "DESC" },
-  { option: "createdAt", order: "ASC" },
-  { option: "createdAt", order: "DESC" },
-];
+test.describe("Sort products API", () => {
+  // Notice that the UI only have name and price
+  const apiSortCases: apiSortCasesType = [
+    { option: "id", order: "ASC" },
+    { option: "id", order: "DESC" },
+    { option: "name", order: "ASC" },
+    { option: "name", order: "DESC" },
+    { option: "createdAt", order: "ASC" },
+    { option: "createdAt", order: "DESC" },
+  ];
 
-const sorting: Record<sortingOptionType, (a: string, b: string) => number> = {
-  createdAt: (a, b) => Date.parse(a) - Date.parse(b),
-  id: (a, b) => Number(a) - Number(b),
-  name: (a, b) => a.localeCompare(b),
-};
+  const sorting: Record<sortingOptionType, (a: string, b: string) => number> = {
+    createdAt: (a, b) => Date.parse(a) - Date.parse(b),
+    id: (a, b) => Number(a) - Number(b),
+    name: (a, b) => a.localeCompare(b),
+  };
 
-for (const { option, order } of apiSortCases) {
-  test(`Test sorting the products using ${option} in a ${order} way`, async ({
-    getProductsApiClient,
-  }) => {
-    const { body, status } = await getProductsApiClient.getProducts({
-      options: {
-        sort: {
-          [option]: order,
+  for (const { option, order } of apiSortCases) {
+    test(`Test sorting the products using ${option} in a ${order} way`, async ({
+      getProductsApiClient,
+    }) => {
+      const { body, status } = await getProductsApiClient.getProducts({
+        options: {
+          sort: {
+            [option]: order,
+          },
         },
-      },
+      });
+      expect(status).toBe(200);
+      if (!body.data) throw new Error(body.errors?.message);
+
+      const items = body.data.products.items;
+      expect(items.length).toBeGreaterThan(1);
+
+      const actual = items.map((item) => item[option]);
+      const expected = [...actual].sort(sorting[option]);
+      order === "DESC" && expected.reverse();
+
+      if (option === "name") {
+        // The database decides how upper and lower case letters are ordered
+        // (SQLite sorts "USB" before "Ultraboost", Postgres does not), so a name
+        // list is correct if it matches either ordering.
+        const binaryExpected = [...actual].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+        order === "DESC" && binaryExpected.reverse();
+        expect([expected, binaryExpected]).toContainEqual(actual);
+        return;
+      }
+      expect(actual).toEqual(expected);
     });
-    expect(status).toBe(200);
-    if (!body.data) throw new Error(body.errors?.message);
-
-    const items = body.data.products.items;
-    expect(items.length).toBeGreaterThan(1);
-
-    const actual = items.map((item) => item[option]);
-    const expected = [...actual].sort(sorting[option]);
-    order === "DESC" && expected.reverse();
-
-    if (option === "name") {
-      // The database decides how upper and lower case letters are ordered
-      // (SQLite sorts "USB" before "Ultraboost", Postgres does not), so a name
-      // list is correct if it matches either ordering.
-      const binaryExpected = [...actual].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
-      order === "DESC" && binaryExpected.reverse();
-      expect([expected, binaryExpected]).toContainEqual(actual);
-      return;
-    }
-    expect(actual).toEqual(expected);
-  });
-}
+  }
+});
