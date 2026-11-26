@@ -34,12 +34,12 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
     if (!activeOrder || activeOrder.lines.length === 0) {
         return (
             <div className="container mx-auto px-4 py-16">
-                <div className="text-center">
-                    <h1 className="text-3xl font-bold mb-4">{t('empty')}</h1>
+                <div className="text-center" data-testid="emptyCart">
+                    <h1 className="text-3xl font-bold mb-4" data-testid="emptyCartHeading">{t('empty')}</h1>
                     <p className="text-muted-foreground mb-8">
                         {t('emptyMessage')}
                     </p>
-                    <Button render={<Link href="/" />} nativeButton={false}>{t('continueShopping')}</Button>
+                    <Button render={<Link href="/" />} nativeButton={false} data-testid="continueShopping">{t('continueShopping')}</Button>
                 </div>
             </div>
         );
@@ -50,6 +50,7 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
             {activeOrder.lines.map((line) => (
                 <div
                     key={line.id}
+                    data-testid="cartItem"
                     className="flex flex-col sm:flex-row gap-4 p-4 first:rounded-t-xl last:rounded-b-xl border-x first:border-t last:border-b bg-card transition-colors duration-200 hover:bg-muted/30"
                 >
                     {line.productVariant.product.featuredAsset && (
@@ -71,6 +72,7 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
                         <Link
                             href={`/product/${line.productVariant.product.slug}`}
                             className="font-semibold hover:underline block"
+                            data-testid="cartItemName"
                         >
                             {line.productVariant.product.name}
                         </Link>
@@ -79,7 +81,7 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
                                 {line.productVariant.name}
                             </p>
                         )}
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-muted-foreground mt-1" data-testid="cartItemSku">
                             {t('sku', {sku: line.productVariant.sku})}
                         </p>
                         <p className="text-sm text-muted-foreground mt-2 sm:hidden">
@@ -98,6 +100,7 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
                                         type="submit"
                                         variant="ghost"
                                         size="icon"
+                                        data-testid="decreaseQuantity"
                                         className="h-9 w-9 rounded-full transition-all duration-200 hover:bg-background"
                                         disabled={line.quantity <= 1}
                                     >
@@ -105,7 +108,7 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
                                     </Button>
                                 </form>
 
-                                <span className="w-10 text-center font-semibold tabular-nums transition-all duration-200">{line.quantity}</span>
+                                <span className="w-10 text-center font-semibold tabular-nums transition-all duration-200" data-testid="cartItemQuantity">{line.quantity}</span>
 
                                 <form
                                     action={async () => {
@@ -117,6 +120,7 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
                                         type="submit"
                                         variant="ghost"
                                         size="icon"
+                                        data-testid="increaseQuantity"
                                         className="h-9 w-9 rounded-full transition-all duration-200 hover:bg-background"
                                     >
                                         <Plus className="h-4 w-4"/>
@@ -134,6 +138,7 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
                                     type="submit"
                                     variant="ghost"
                                     size="icon"
+                                    data-testid="removeCartItem"
                                     className="h-9 w-9 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors duration-200"
                                 >
                                     <X className="h-5 w-5"/>
@@ -150,10 +155,10 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
                     </div>
 
                     <div className="hidden sm:block text-right flex-shrink-0">
-                        <p className="font-semibold text-lg">
+                        <p className="font-semibold text-lg" data-testid="cartItemLinePrice">
                             <Price value={line.linePriceWithTax} currencyCode={activeOrder.currencyCode}/>
                         </p>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-muted-foreground mt-1" data-testid="cartItemUnitPrice">
                             <Price value={line.unitPriceWithTax} currencyCode={activeOrder.currencyCode}/> {t('each')}
                         </p>
                     </div>
