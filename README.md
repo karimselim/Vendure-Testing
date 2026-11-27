@@ -44,9 +44,15 @@ Everything under `tests/`, `pages/`, `api-clients/`, `fixtures/`, `types/`, `tes
 
 ## Run locally
 
-1. Start a Vendure server (port 3000) and the storefront (port 3001).
+1. Start a Vendure server (port 3000) and the storefront (port 3001). These are the same steps CI runs in `.github/workflows/playwright.yml`:
+   - `npx @vendure/create shop --ci --storefront nextjs --db sqlite --use-npm` in an empty folder.
+   - Copy this repo's `storefront/` over `shop/apps/storefront/`, without `.env*`, `node_modules` and `.next`.
+   - `npm run dev:server` in `shop/apps/server`, and `npx next dev --port 3001` in `shop/apps/storefront`.
+   - Create the login test user `testing@testing.com` with `.github/scripts/seed-user.sh` (needs `curl`, `jq` and `SIGNUP_PASSWORD` set).
 2. `npm ci && npx playwright install chromium`
-3. Create `.env` with `SIGNUP_PASSWORD=<password>` (and `BASE_URL` if the storefront is not at `http://localhost:3001/en`).
+3. Create `.env` (never commit it) with these variables:
+   - `SIGNUP_PASSWORD`: the password used when the tests sign up users. Use the same value for the seeded user above. Pick your own, nothing secret is stored in the repo.
+   - `BASE_URL`: optional, defaults to `http://localhost:3001/en`.
 4. `npx playwright test` (all), `npx playwright test tests/api` (API only), `npx playwright test tests/ui` (UI only).
 
 ## CI
