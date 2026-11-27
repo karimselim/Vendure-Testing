@@ -14,6 +14,12 @@ Everything under `tests/`, `pages/`, `api-clients/`, `fixtures/`, `types/`, `tes
 
 *Playwright HTML report from a green CI run: 68 passed, 0 failed, 0 flaky.*
 
+## Tech stack and requirements
+
+- Playwright Test 1.64.1 (`@playwright/test`), TypeScript, `dotenv` 18.0.8. Versions are the ones in `package-lock.json`.
+- Storefront under test: Next.js 16.3.0 with React 19.2.8 (from `storefront/package-lock.json`).
+- Node.js 22 (the version CI uses) and npm. A Vendure server and the storefront must be running before the tests start.
+
 ## Structure
 
 - `pages/` page objects, one class per page (`CartPage`, `CheckoutPage`, `ProductsPage`, ...). Locators are private, tests call methods.
@@ -38,9 +44,15 @@ Everything under `tests/`, `pages/`, `api-clients/`, `fixtures/`, `types/`, `tes
 
 ## Run locally
 
-1. Start a Vendure server (port 3000) and the storefront (port 3001).
+1. Start a Vendure server (port 3000) and the storefront (port 3001). These are the same steps CI runs in `.github/workflows/playwright.yml`:
+   - `npx @vendure/create shop --ci --storefront nextjs --db sqlite --use-npm` in an empty folder.
+   - Copy this repo's `storefront/` over `shop/apps/storefront/`, without `.env*`, `node_modules` and `.next`.
+   - `npm run dev:server` in `shop/apps/server`, and `npx next dev --port 3001` in `shop/apps/storefront`.
+   - Create the login test user `testing@testing.com` with `.github/scripts/seed-user.sh` (needs `curl`, `jq` and `SIGNUP_PASSWORD` set).
 2. `npm ci && npx playwright install chromium`
-3. Create `.env` with `SIGNUP_PASSWORD=<password>` (and `BASE_URL` if the storefront is not at `http://localhost:3001/en`).
+3. Create `.env` (never commit it) with these variables:
+   - `SIGNUP_PASSWORD`: the password used when the tests sign up users. Use the same value for the seeded user above. Pick your own, nothing secret is stored in the repo.
+   - `BASE_URL`: optional, defaults to `http://localhost:3001/en`.
 4. `npx playwright test` (all), `npx playwright test tests/api` (API only), `npx playwright test tests/ui` (UI only).
 
 ## CI
