@@ -14,6 +14,12 @@ Everything under `tests/`, `pages/`, `api-clients/`, `fixtures/`, `types/`, `tes
 
 *Playwright HTML report from a green CI run: 68 passed, 0 failed, 0 flaky.*
 
+## Tech stack and requirements
+
+- Playwright Test 1.64.1 (`@playwright/test`), TypeScript, `dotenv` 18.0.8. Versions are the ones in `package-lock.json`.
+- Storefront under test: Next.js 16.3.0 with React 19.2.8 (from `storefront/package-lock.json`).
+- Node.js 22 (the version CI uses) and npm. A Vendure server and the storefront must be running before the tests start.
+
 ## Structure
 
 - `pages/` page objects, one class per page (`CartPage`, `CheckoutPage`, `ProductsPage`, ...). Locators are private, tests call methods.
